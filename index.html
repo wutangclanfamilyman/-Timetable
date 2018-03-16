@@ -1,297 +1,96 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset="utf-8">
   	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   	<link rel="stylesheet" type="text/css" href="css/style.css">
+    <href type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBe-P7g_p1JjWk6k3qHHqMIkF4fkUv7MxM&libraries=places"></href>
   	<link rel="stylesheet" type="text/css" href="css/bootstrap.css">
-  	<link rel="stylesheet" type="text/css" href="css/bootstrap-min.css">
+  	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
   	<link rel="stylesheet" type="text/css" href="css/font-awesome.css">
   	<link rel="stylesheet" href="css/font-awesome.min.css">
-  	<script src="js/map.js"></script>
-    <script src="js/main.js"></script>
+    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+    <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+    <script src="https://cdn.klokantech.com/maptilerlayer/v1/index.js"></script>
+    <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js"></script>
+    <script src="https://cdn.klokantech.com/maptilerlayer/v1/index.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/map_script.js"></script>
   </head>
-  <body>
+  <body onload="showCity()">
     <div id="map"></div>
-    <nav class="navbar menu">
-          <div class="container-fluid">
-            <ul class="nav navbar-nav">
-              <li class="active"><a href="#"><i class="fa fa-search fa-lg" aria-hidden="true"></i> Пошук маршруту</a></li>
-              <li><a href="bus.html"><i class="fa fa-bus fa-lg" aria-hidden="true"></i> Розклад руху</a></li>
-            </ul>
-            <ul class="nav navbar-nav navbar-right">
-              <li><a href="#myModal" data-toggle="modal"><i class="fa fa-user-o fa-lg" aria-hidden="true"></i> Реєстрація</a></li>
-              <li><a href="#myModal" data-toggle="modal"><span class="fa fa-sign-in fa-lg"></span> Авторизація</a></li>
-            </ul>
-          </div>
-    </nav>
+    <div id="RoutePanel">
+      <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#route">Побудова маршруту</a></li>
+        <li><a data-toggle="tab" href="#timetable">Розклад руху</a></li>
+      </ul>
 
-<div class="row">
-    	<div class="searchForm col-xs-6 col-sm-3">
-        	<form role="form" id="formSearch">
-        		<div class="row input-start">
-        			<div class="form-group col-sm-12">
-                    	<input type="text" class="form-control" id="start" placeholder="Enter name" required>
-                	</div>
+      <div class="tab-content" id="tabsMenu">
+        <div id="route" class="tab-pane fade in active">
+          <div class="row">
+            <form role="form" id="formSearch">
+            <div class="row input-start">
+              <div class="form-group col-sm-12">
+                      <input type="text" class="form-control" id="startInput" placeholder="Точка відправки" required>
+                      <input type="hidden" id="IDpointA" value="191">
+                  </div>
                 </div>
                 <div class="row input-finish">
-                	<div class="form-group col-sm-12">
-                    	<input type="email" class="form-control" id="finish" placeholder="Enter email" required>
-                	</div>
+                  <div class="form-group col-sm-12">
+                      <input type="text" class="form-control" id="finishInput" placeholder="Точка прибуття" required>
+                      <input type="hidden" id="IDpointB" value="31">
+                  </div>
                 </div>
-                <div class="row btn-send">
-                	<div class="form-group col-sm-offset-1 col-sm-10 col-sm-offset-1">
-                    	<button class="btn" id="btn-search">Пошук</button>
-                	</div>
+                <div class="row btn-send texc-center">
+                  <div class="form-group col-sm-offset-1 col-sm-10 col-sm-offset-1">
+                      <a class="btn" onclick="getRouteNotTransfer()" id="btn-search">Пошук</a>
+                  </div>
                 </div>
             </form> 
-        </div>
-</div>
-<div class="row">
-        <div class="col-xs-6 col-sm-3 sidebar-offcanvas routesForm" id="sidebar" role="navigation"   style="float:left">
-      <div class="sidebar-nav">
-        <ul class="nav">
-          <li class="header"><strong>Варіанти маршрутів</strong></li>
-          <li class="active">
-        <div class="row block-route">
-            <div class="container-route col-sm-12">
-                    <div class="row">
-                    <div class="col-sm-5 price">
-                        <p>15 грн</p>
-                    </div>
-                    <div class="col-sm-offset-5 col-sm-2 btn-save">
-                        <a href="#"><img src="img/save.png"></a>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-12 route">
-                        <p class="number">212</p>
-                        <img src="img/arrow.png">
-                        <p class="number">45</p>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-5 time">
-                        <p>30 хв</p>
-                    </div>
-                    <div class="col-sm-7 details">
-                        <input type="button" name="answer" value="Show Div" onclick="showDiv()" />
-                    </div>
-                </div>
-                <div id="detailsRoute" class="row">
-                    <p>1</p>
-                    <p>1</p>
-                    <p>1</p>
-                    <p>1</p>
-                    <p>1</p>
-                </div>
-            </div>
-        </div>
-          </li>
-          <li>
-            <div class="row block-route">
-            <div class="container-route col-sm-12">
-                <div data-spy="scroll">
-                    <div class="row">
-                    <div class="col-sm-5 price">
-                        <p>25 грн</p>
-                    </div>
-                    <div class="col-sm-offset-5 col-sm-2 btn-save">
-                        <a href="#"><img src="img/save.png"></a>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-12 route">
-                        <p class="number">825</p>
-                        <img src="img/arrow.png">
-                        <p class="number">11</p>
-                        <img src="img/arrow.png">
-                        <p class="number">356</p>
-                        <img src="img/arrow.png">
-                        <p class="number">67</p>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-5 time">
-                        <p>40 хв</p>
-                    </div>
-                    <div class="col-sm-7 details">
-                        <input type="button" name="answer" value="Show Div" />
-                    </div>
-                </div>
-                </div>
-            </div>
-        </div>
-          </li>
-          <li>
-            <div class="row block-route">
-            <div class="container-route col-sm-12">
-                <div data-spy="scroll">
-                    <div class="row">
-                    <div class="col-sm-5 price">
-                        <p>4 грн</p>
-                    </div>
-                    <div class="col-sm-offset-5 col-sm-2 btn-save">
-                        <a href="#"><img src="img/save.png"></a>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-12 route">
-                        <p class="number">416</p>
-                        <img src="img/arrow.png">
-                        <img src="img/man.png">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-5 time">
-                        <p>24 хв</p>
-                    </div>
-                    <div class="col-sm-7 details">
-                        <input type="button" name="answer" value="Show Div" />
-                    </div>
-                </div>
-                </div>
-            </div>
-        </div>
-          </li>
-          <li>
-              <div class="row block-route">
-            <div class="container-route col-sm-12">
-                <div data-spy="scroll">
-                    <div class="row">
-                    <div class="col-sm-5 price">
-                        <p>12 грн</p>
-                    </div>
-                    <div class="col-sm-offset-5 col-sm-2 btn-save">
-                        <a href="#"><img src="img/save.png"></a>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-12 route">
-                        <p class="number">1</p>
-                        <img src="img/arrow.png">
-                        <p class="number">43</p>
-                        <img src="img/arrow.png">
-                        <img src="img/man.png">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-5 time">
-                        <p>20 хв</p>
-                    </div>
-                    <div class="col-sm-7 details">
-                        <input type="button" name="answer" value="Show Div"" />
-                    </div>
-                </div>
-                </div>
-            </div>
-        </div>
-          </li>
-        </ul>
-      </div><!--/.well -->
-        </div><!--/span-->
-</div><!--/row-->
+            <hr>
+           </div>
+           <div id="resultRoute">
 
-  <!-- Modal -->
-<div class="modal fade bs-modal-sm" id="myModal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-sm">
-    <div class="modal-content">
-        <br>
-        <div class="bs-example bs-example-tabs">
-            <ul id="myTab" class="nav nav-tabs">
-              <li class="active"><a href="#signin" data-toggle="tab">Вхід</a></li>
-              <li class=""><a href="#signup" data-toggle="tab">Реєстрація</a></li>
-            </ul>
+           </div>
         </div>
-      <div class="modal-body">
-        <div id="myTabContent" class="tab-content">
-        <div class="tab-pane fade active in" id="signin">
-            <form class="form-horizontal">
-            <fieldset>
-            <!-- Sign In Form -->
-            <!-- Text input-->
-            <div class="control-group">
-              <label class="control-label" for="userid">Логін:</label>
-              <div class="controls">
-                <input required="" id="userid" name="userid" type="text" class="form-control" placeholder="Something" class="input-medium" required="">
+        <div id="timetable" class="tab-pane fade">
+          <div class="row listCity text-center">
+              <div class="row header">
+                <label>Оберіть місто</label>
+              </div>
+              <div class="row">
+                <select id="city" onchange="showNumbers(this.value)">
+                </select>
               </div>
             </div>
-
-            <!-- Password input-->
-            <div class="control-group">
-              <label class="control-label" for="passwordinput">Пароль:</label>
-              <div class="controls">
-                <input required="" id="passwordinput" name="passwordinput" class="form-control" type="password" placeholder="********" class="input-medium">
+            <div class="row allNumbersRoutes" id="numbers">
+            </div>
+            <div class="row">
+            <div class="direction text-center">
+                <label class="name">Оберіть напрям маршруту</label>
+                <select id="direction" onchange="ShowTimeDeparture(this.value); getPolylineForRoute(routeNum,this.value);">
+                  <option class="active" value="">Не обрано</option>
+                </select>
+            </div>
+            </div>
+            <div class="row">
+              <div class="weekend text-center">
+                <label>
+                  Будні
+                  <input type="checkbox" data-toggle="toggle" data-on="" data-off="" onchange="change()" id="switchWorkWeekend">
+                  Вихідні
+                </label>
               </div>
             </div>
-
-            <!-- Button -->
-            <div class="control-group">
-              <label class="control-label" for="signin"></label>
-              <div class="controls">
-                <button id="signin" name="signin" class="btn btn-success">Вхід</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Закрити</button>
-              </div>
+            <div class="row allTimesStart" id="timedeparture">
             </div>
-            </fieldset>
-            </form>
+            <div class="detailOfRoute" id="infoRouteDiv">
+            </div>
         </div>
-        <div class="tab-pane fade" id="signup">
-            <form class="form-horizontal">
-            <fieldset>
-            <!-- Sign Up Form -->
-            <!-- Text input-->
-            <div class="control-group">
-              <label class="control-label" for="Email">Email:</label>
-              <div class="controls">
-                <input id="Email" name="Email" class="form-control" type="text" placeholder="JoeSixpack@sixpacksrus.com" class="input-large" required="">
-              </div>
-            </div>
-            
-            <!-- Text input-->
-            <div class="control-group">
-              <label class="control-label" for="userid">Логін:</label>
-              <div class="controls">
-                <input id="userid" name="userid" class="form-control" type="text" placeholder="JoeSixpack" class="input-large" required="">
-              </div>
-            </div>
-            
-            <!-- Password input-->
-            <div class="control-group">
-              <label class="control-label" for="password">Пароль:</label>
-              <div class="controls">
-                <input id="password" name="password" class="form-control" type="password" placeholder="********" class="input-large" required="">
-                <em>1-8 Символів</em>
-              </div>
-            </div>
-            
-            <!-- Text input-->
-            <div class="control-group">
-              <label class="control-label" for="reenterpassword">Повторіть пароль:</label>
-              <div class="controls">
-                <input id="reenterpassword" class="form-control" name="reenterpassword" type="password" placeholder="********" class="input-large" required="">
-              </div>
-            </div>
-            
-            <!-- Button -->
-            <div class="control-group">
-              <label class="control-label" for="confirmsignup"></label>
-              <div class="controls">
-                <button id="confirmsignup" name="confirmsignup" class="btn btn-success">Реєстрація</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Закрити</button>
-              </div>
-            </div>
-            </fieldset>
-            </form>
       </div>
     </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-    <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBe-P7g_p1JjWk6k3qHHqMIkF4fkUv7MxM&callback=initMap">
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBe-P7g_p1JjWk6k3qHHqMIkF4fkUv7MxM&libraries=places&callback=initMap" async defer
+    >
     </script>
   </body>
 </html>
