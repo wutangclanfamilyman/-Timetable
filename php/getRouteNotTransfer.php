@@ -2,12 +2,29 @@
 
 	$F = intval($_GET['F']);
   $S = intval($_GET['S']);
+  date_default_timezone_set("Europe/Kiev");
+  $today = date("H:i");
 	$con = mysqli_connect('localhost','root','','Transport');
 	if (!$con) {
 	    die('Could not connect: ' . mysqli_error($con));
 	}
 	mysqli_select_db($con,"ajax_demo");
-  
+  $sql="SELECT `Stop`.`ID_Stop` AS ID, `Stop`.`Name` AS Name FROM `Stop` WHERE `Stop`.`ID_Stop` = ".$F."";
+  $result = mysqli_query($con,$sql);
+  if (!$result) {
+      die('Could not connect: ' . mysqli_error($con));
+  }
+  while($row = mysqli_fetch_array($result)) {
+    $FromStop = $row['Name'];
+  }
+  $sql="SELECT `Stop`.`ID_Stop` AS ID, `Stop`.`Name` AS Name FROM `Stop` WHERE `Stop`.`ID_Stop` = ".$S."";
+  $result = mysqli_query($con,$sql);
+  if (!$result) {
+      die('Could not connect: ' . mysqli_error($result));
+  }
+  while($row = mysqli_fetch_array($result)) {
+    $ToStop = $row['Name'];
+  }
 	$sql="SELECT R.ID_Route AS ID, r1.Number AS Num FROM (
     SELECT `Complex_Route`.`ID_Route` AS ID_Route FROM `Complex_Route` WHERE `Complex_Route`.`ID_Stop`= '".$F."'
     UNION ALL
@@ -17,16 +34,31 @@
 	$result = mysqli_query($con,$sql);
 
 	while($row = mysqli_fetch_array($result)) {
-    $sqlS="SELECT TIMESTAMPDIFF(MINUTE, MIN(`Complex_Route`.`Span`), MAX(`Complex_Route`.`Span`)) AS T FROM `Complex_Route` WHERE `Complex_Route`.`ID_Route` = '".$row['ID']."' AND `Complex_Route`.`ID_Stop` IN ('".$F."','".$S."')";
+    $sqlS="SELECT TIMESTAMPDIFF(MINUTE, MIN(`Complex_Route`.`Span`), MAX(`Complex_Route`.`Span`)) AS T, P.M AS Price FROM `Complex_Route`, (SELECT Money AS M FROM Price WHERE ID_Route = '".$row['ID']."' AND ID_First_Stop = '".$F."' AND ID_Second_Stop = '".$S."') AS P WHERE `Complex_Route`.`ID_Route` = '".$row['ID']."' AND `Complex_Route`.`ID_Stop` IN ('".$F."','".$S."')";
     $resultS = mysqli_query($con,$sqlS);
     while ($res = mysqli_fetch_array($resultS)) {
-       echo "<div class='container-route' onclick=''> 
+       echo "<div class='container-route-not-transfer'>
                <div class='row'>
-                 <span class='price'>10 грн</span>
-                 <span class='time'>".$res['T']." хв</span>
-               </div>
-               <div class='row route'>
-                 <button class='number' value='".$row['ID']."' href='#timetable' onclick='ShowDirection(value);'>".$row['Num']."</button>
+                <div class='col-sm-6 col-xs-6 col-md-6 route text-center'>
+                  <div class='row'><label class='label label-info'>".$FromStop."</label></div>
+                          <div class='row'><i class='fa fa-ellipsis-v'></i></div>
+                  <div class='row'>
+                    <button class='number' value='".$row['ID']."' data-toggle='tab' href='#timetable' title='Номер маршруту' onclick='ShowDirection(value);'><i class='fa fa-bus'></i> ".$row['Num']."</button>
+                  </div>
+                  <div class='row'><i class='fa fa-ellipsis-v'></i></div>
+                          <div class='row'><label class='label label-info'>".$ToStop."</label></div>
+                </div>
+                <div class='col-sm-6 col-xs-6 col-md-6 info'>
+                  <div class='row price text-right'>
+                    <label class='label label-success' title='Загальна сума'><i class='fa fa-money-bill-alt'></i> ".$res['Price']." грн</label>
+                  </div>
+                  <div class='row time text-right'>
+                    <label class='label label-info' title='Загальний час'><i class='fa fa-stopwatch'></i> ".$res['T']." хв</label>
+                  </div>
+                  <div class='row show text-right'>
+                    <a class='btn label-info' title='Показати на карті' onclick='getPolylineForNotTransfer(".$row['ID'].", ".$F.",".$S.")'><i class='fa fa-map'></i> Показати</a>
+                  </div>
+                </div>
                </div>
              </div>"; 
              break;

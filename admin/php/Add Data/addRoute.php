@@ -1,15 +1,20 @@
 <?php  
 
+	$r = strval($_GET['r']);
+
 	$con = mysqli_connect('localhost','root','','Transport');
 	if (!$con) {
 	    die('Could not connect: ' . mysqli_error($con));
 	}
 	mysqli_select_db($con,"ajax_demo");
-	$sql="SELECT ID_City, Name FROM City";
+	$sql="INSERT INTO `Route`(`Number`) VALUES ('".$r."')";
 	$result = mysqli_query($con,$sql);
-	echo "<option value='' class='active'>Не обрано</option>";
-	while ($row = mysqli_fetch_array($result)) {
-		echo "<option value=".$row['ID_City'].">".$row['Name']."</option>";
+	if (!$result) {
+		echo die("Маршрут не додано. Спробуйте пізніше.");
 	}
+	else{
+		echo "Маршрут додано!";
+	}
+
 	mysqli_close($con);
 ?>

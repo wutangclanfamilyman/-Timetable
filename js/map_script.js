@@ -1,12 +1,19 @@
 var map;
-var lineRoute;
+var lineRouteNotTransfer, lineRouteFrom, lineRouteTo;
 var routeNum;
 var directNum;
 var markerStart;
+var markerTransferFrom;
+var markerTransferTo;
 var markerFinish;
-var locations = [];
 var infoWindow;
 var latlngbounds;
+
+var locations = [];
+var directionsServiceNotTransfer, directionsDisplayNotTransfer;
+var directionsServiceFrom, directionsDisplayFrom;
+var directionsServiceTo, directionsDisplayTo;
+
 $('#tabsMenu').on('change.zf.tabs', function() {
 
   if($('#timetable:visible').length){
@@ -15,10 +22,13 @@ $('#tabsMenu').on('change.zf.tabs', function() {
 
 });
 var stopIcon = "../img/stop.png";
+    
 function initMap(){
-    GetAllStops();
+    directionsServiceNotTransfer = new google.maps.DirectionsService();
+    directionsDisplayNotTransfer = new google.maps.DirectionsRenderer({suppressMarkers: true});
+	GetAllStops();
     var mapProp = {
-        center: new google.maps.LatLng(50.3165912, 30.2995321),
+        center: new google.maps.LatLng(50.316, 30.299),
         disableDefaultUI: true,
         zoomControl: true,
         zoom: 17,
@@ -31,7 +41,7 @@ function initMap(){
     var geoloccontrol = new klokantech.GeolocationControl(map, 17);
     var bounds = new google.maps.LatLngBounds();
     map.fitBounds(bounds);
-      }
+}
 function getRandomColor() {
   var letters = '0123489ABC';
   var color = '#';
@@ -40,6 +50,7 @@ function getRandomColor() {
   }
   return color;
 }
+
 var $wrap = $('.wrap').show().scrollLeft(100);
 $('.show-left').click(function () {
     $wrap.animate({
@@ -55,6 +66,45 @@ $('.hide-borders,.right-border,.left-border').click(function () {
     $wrap.animate({
         scrollLeft: 100
     }, 200);
+});
+$(document).ready(function(){
+  var clicked=false;
+
+  $('#user').hide();
+
+    $('#btn-form').on('click', function() {
+        clicked = !clicked;
+        if (!clicked) {
+             $('#user').hide();
+          }
+          else{
+             $('#user').show();
+          }
+    }); 
+});
+$(function () {
+    
+    $("#startInput").autocomplete({
+        minLength: 0,
+        maxResults: 10,
+        source: src,
+        focus: function (event, ui) {
+            $("#startInput").val(ui.item.title);
+            return false;
+        },
+        select: function (event, ui) {
+            $("#startInput").val(ui.item.title);
+            $("#IDpointA").val(ui.item.id);
+
+            return false;
+        }
+    })
+        .data("ui-autocomplete")._renderItem = function (ul, item) {
+        return $("<li>")
+            .data("ui-autocomplete-item", item)
+            .append("<a>" + item.title + "</a>")
+            .appendTo(ul);
+    };
 });
       //path = [[50.3165912, 30.2995321], [50.3133146, 30.2989009], [50.3120086, 30.3047984], [50.3094448, 30.3025443], [50.3068896, 30.3010787], [50.3066838, 30.3034754], [50.3041261, 30.3093521]];
 
@@ -109,7 +159,7 @@ function checkTransfer(title_stop, routeF, routeS){
             }
 }
 function setMarkers(response) {
-    var markers = JSON.parse(response); 
+        var markers = JSON.parse(response); 
         for (var i = 0; i < markers.length; i++) {
             var data = markers[i]
             var myLatlng = new google.maps.LatLng(data.lat, data.lng);
@@ -162,21 +212,12 @@ function setMarkers(response) {
         var bounds = new google.maps.LatLngBounds();
         map.setCenter(latlngbounds.getCenter());
         map.fitBounds(latlngbounds);
-
 }
- function removePolyLine() {  
-    lineRoute.setMap(null);  
- }
- function removeMarkerStart() {  
-    markerStart.setMap(null);  
- }
- function removeMarkerFinish() {  
-    markerFinish.setMap(null);  
- }
-
 function Polyline(response) {
+    
     var markers = JSON.parse(response);
     var coordinates = [];
+    var waypoint = [];
     for (var i = 0; i < markers.length; i++) {
         var data = markers[i]
         coordinates.push(new google.maps.LatLng(data.lat, data.lng));
@@ -184,34 +225,50 @@ function Polyline(response) {
   /*  if (lineRoute != null) {
         removePolyLine();
     } */
-    if (markerStart != null) {
-        removeMarkerStart();
+    for (var i = 1; i < coordinates.length-1; i++) {
+        if (i != 23) {
+            i++;
+            waypoint.push({location: coordinates[i], stopover:true});
+        }
+        else{
+            break;
+        }
     }
-    if (markerFinish != null) {
-        removeMarkerFinish();
-    }
-    lineRoute = new google.maps.Polyline({
+    lineRouteNotTransfer = new google.maps.Polyline({
         path: coordinates,
         geodesic: true,
         strokeColor: getRandomColor(),
         strokeOpacity: 0.8,
         strokeWeight: 5
     })
+    directionsServiceNotTransfer.route({
+          origin: coordinates[0],
+          destination: coordinates[coordinates.length - 1],
+          waypoints: waypoint,
+          optimizeWaypoints: true,
+          travelMode: 'DRIVING'
+        }, function(result, status) {
+        if (status == 'OK') {
+          directionsDisplayNotTransfer.setDirections(result);
+          directionsDisplayNotTransfer.setMap(map);
+        }
+      });
+    
     markerStart = new google.maps.Marker({
         position: coordinates[0],
         map: map,
-        icon: "../img/marker-a.png",
+        icon: "../img/marker.png",
         zIndex: 10
     });
     markerFinish = new google.maps.Marker({
         position: coordinates[coordinates.length - 1],
         map: map,
-        icon: "../img/marker-b.png",
+        icon: "../img/marker.png",
         zIndex: 10
     });
     markerStart.setMap(map);
     markerFinish.setMap(map);
-    lineRoute.setMap(map);
+    // lineRoute.setMap(map);
     var bounds = new google.maps.LatLngBounds();
     for (var i = 0; i < coordinates.length; i++) {
       bounds.extend(coordinates[i]);
@@ -219,7 +276,146 @@ function Polyline(response) {
     bounds.getCenter();
     map.fitBounds(bounds);
 }
-
+function PolylineOneTransferFrom(response) {
+    if (directionsDisplayFrom != null) {
+        lineRouteFrom.setMap(null);
+        directionsDisplayFrom.setMap(null);
+        markerStart.setMap(null);
+        markerTransferFrom.setMap(null);
+    }
+    directionsServiceFrom = new google.maps.DirectionsService();
+    directionsDisplayFrom = new google.maps.DirectionsRenderer({suppressMarkers: true});
+    var markers = JSON.parse(response);
+    var coordinates = [];
+    var waypoint = [];
+    for (var i = 0; i < markers.length; i++) {
+        var data = markers[i]
+        coordinates.push(new google.maps.LatLng(data.lat, data.lng));
+    } 
+  /*  if (lineRoute != null) {
+        removePolyLine();
+    } */
+    for (var i = 1; i < coordinates.length-1; i++) {
+        if (i != 23) {
+            i++;
+            waypoint.push({location: coordinates[i], stopover:true});
+        }
+        else{
+            break;
+        }
+    }
+    lineRouteFrom = new google.maps.Polyline({
+        path: coordinates,
+        geodesic: true,
+        strokeColor: getRandomColor(),
+        strokeOpacity: 0.8,
+        strokeWeight: 5
+    })
+    directionsServiceFrom.route({
+          origin: coordinates[0],
+          destination: coordinates[coordinates.length - 1],
+          waypoints: waypoint,
+          optimizeWaypoints: true,
+          travelMode: 'DRIVING'
+        }, function(result, status) {
+        if (status == 'OK') {
+          directionsDisplayFrom.setDirections(result);
+          directionsDisplayFrom.setMap(map);
+        }
+      });
+    
+    markerStart = new google.maps.Marker({
+        position: coordinates[0],
+        map: map,
+        icon: "../img/marker.png",
+        zIndex: 10
+    });
+    markerTransferFrom = new google.maps.Marker({
+        position: coordinates[coordinates.length - 1],
+        map: map,
+        icon: "../img/marker-transfer-from.png",
+        zIndex: 10
+    });
+    markerStart.setMap(map);
+    markerTransferFrom.setMap(map);
+    // lineRoute.setMap(map);
+    var bounds = new google.maps.LatLngBounds();
+    for (var i = 0; i < coordinates.length; i++) {
+      bounds.extend(coordinates[i]);
+    }
+    bounds.getCenter();
+    map.fitBounds(bounds);
+}
+function PolylineOneTransferTo(response) {
+    if (directionsDisplayTo != null) {
+        lineRouteTo.setMap(null);
+        directionsDisplayTo.setMap(null);
+        markerTransferTo.setMap(null);
+        markerFinish.setMap(null);
+    }
+    directionsServiceTo = new google.maps.DirectionsService();
+    directionsDisplayTo = new google.maps.DirectionsRenderer({suppressMarkers: true});
+    var markers = JSON.parse(response);
+    var coordinates = [];
+    var waypoint = [];
+    for (var i = 0; i < markers.length; i++) {
+        var data = markers[i]
+        coordinates.push(new google.maps.LatLng(data.lat, data.lng));
+    } 
+  /*  if (lineRoute != null) {
+        removePolyLine();
+    } */
+    for (var i = 1; i < coordinates.length-1; i++) {
+        if (i != 23) {
+            i++;
+            waypoint.push({location: coordinates[i], stopover:true});
+        }
+        else{
+            break;
+        }
+    }
+    lineRouteTo = new google.maps.Polyline({
+        path: coordinates,
+        geodesic: true,
+        strokeColor: getRandomColor(),
+        strokeOpacity: 0.8,
+        strokeWeight: 5
+    })
+    directionsServiceTo.route({
+          origin: coordinates[0],
+          destination: coordinates[coordinates.length - 1],
+          waypoints: waypoint,
+          optimizeWaypoints: true,
+          travelMode: 'DRIVING'
+        }, function(result, status) {
+        if (status == 'OK') {
+          directionsDisplayTo.setDirections(result);
+          directionsDisplayTo.setMap(map);
+        }
+      });
+    
+    markerTransferTo = new google.maps.Marker({
+        position: coordinates[0],
+        map: map,
+        icon: "../img/marker-transfer-to.png",
+        zIndex: 10
+    });
+    markerFinish = new google.maps.Marker({
+        position: coordinates[coordinates.length - 1],
+        map: map,
+        icon: "../img/marker.png",
+        zIndex: 10
+    });
+    markerStart.setMap(map);
+    markerTransferTo.setMap(map);
+    // lineRoute.setMap(map);
+    var bounds = new google.maps.LatLngBounds();
+    for (var i = 0; i < coordinates.length; i++) {
+      bounds.extend(coordinates[i]);
+    }
+    bounds.getCenter();
+    map.fitBounds(bounds);
+}
 function showCity() {
         if (window.XMLHttpRequest) {
             // code for IE7+, Firefox, Chrome, Opera, Safari
@@ -237,7 +433,15 @@ function showCity() {
         xmlhttp.send();
 }
 function showNumbers(city){
-    if (city=="") {
+    if (city=="" || lineRouteTo != null) {
+        removePolyline();
+        removeMarkerAPolyline();
+        removeMarkerBPolyline();
+        hoverBlockNumbers();
+        hoverBlockDirection();
+        hoverBlockWeekend();
+        hoverBlockAllTimesStart();
+        hoverBlockDetailsOfRoute();
         return;
     }
     if (window.XMLHttpRequest) {
@@ -248,6 +452,16 @@ function showNumbers(city){
     }
     xmlhttp.onreadystatechange = function(){
         if (this.readyState == 4 && this.status == 200) {
+            if (lineRouteTo != null) {
+                removePolyline();
+                removeMarkerAPolyline();
+                removeMarkerBPolyline();
+            }
+            showBlockNumbers();
+            hoverBlockDirection();
+            hoverBlockWeekend();
+            hoverBlockAllTimesStart();
+            hoverBlockDetailsOfRoute();
             document.getElementById("numbers").innerHTML = "";
             document.getElementById("numbers").innerHTML = this.responseText;
         }
@@ -269,8 +483,17 @@ function ShowDirection(id_route){
     }
     xmlhttp.onreadystatechange = function(){
         if (this.readyState == 4 && this.status == 200) {
+            showBlockDirection();
+            showBlockWeekend();
+            showBlockAllTimesStart();
+            showBlockDetailsOfRoute();
             document.getElementById("timedeparture").innerHTML = "";
             document.getElementById("direction").innerHTML = this.responseText;
+            document.getElementById("direction").onchange();
+            if (!document.getElementById('saveRouteUser')) {
+                document.getElementById('saveRouteUser').value = id_route;
+            }
+            
         }
     };
     xmlhttp.open("GET", "php/getDirection.php?r="+id_route, true);
@@ -280,7 +503,7 @@ function ShowDirection(id_route){
 
 function change() {
     ShowTimeDeparture(directNum);
-}
+    }
 
 function ShowTimeDeparture(id_direction) {
     directNum = id_direction;
@@ -325,8 +548,6 @@ function ShowInfoAboutRoute(id_route) {
     xmlhttp.open("GET", "php/getInfoAboutRoute.php?r="+id_route, true);
     xmlhttp.send();
 }
-
-
 function getPolylineForRoute(id_route, id_direction) {
     if (id_route=="") {
         return;
@@ -342,16 +563,19 @@ function getPolylineForRoute(id_route, id_direction) {
     }
     xmlhttp.onreadystatechange = function(){
         if (this.readyState == 4 && this.status == 200) {
+            if (lineRouteTo != null) {
+                removePolyline();
+                removeMarkerAPolyline();
+                removeMarkerBPolyline();
+            }
             Polyline(this.responseText);
         }
     };
     xmlhttp.open("GET", "php/getPolylineRoute.php?r="+id_route+"&d="+id_direction, true);
     xmlhttp.send();
 }
-
-
-function toInputA(id_stop) {
-    if (id_stop=="") {
+function toInputA(id_stop, id_direction) {
+    if (id_stop=="" || id_direction == "") {
         return;
     }
     if (window.XMLHttpRequest) {
@@ -362,14 +586,16 @@ function toInputA(id_stop) {
     }
     xmlhttp.onreadystatechange = function(){
         if (this.readyState == 4 && this.status == 200) {
+            removeAllResults();
             document.getElementById("IDpointA").value = id_stop;
+            document.getElementById("IDDir").value = id_direction;
             document.getElementById("startInput").value = this.responseText;
         }
     };
     xmlhttp.open("GET", "php/getStopToInputA.php?s="+id_stop, true);
     xmlhttp.send();
     }
- function toInputB(id_stop) {
+function toInputB(id_stop) {
     if (id_stop=="") {
         return;
     }
@@ -381,6 +607,7 @@ function toInputA(id_stop) {
     }
     xmlhttp.onreadystatechange = function(){
         if (this.readyState == 4 && this.status == 200) {
+            removeAllResults();
             document.getElementById("IDpointB").value = id_stop;
             document.getElementById("finishInput").value = this.responseText;
         }
@@ -399,14 +626,55 @@ function getRouteNotTransfer() {
     }
     xmlhttp.onreadystatechange = function(){
         if (this.readyState == 4 && this.status == 200) {
-            document.getElementById("resultRoute").innerHTML = this.responseText;
-            getRouteOneTransfer();
+            removeAllResults();
+            if (!$.trim(this.responseText)){ 
+                getRouteOneTransfer();  
+            }
+            else{   
+                document.getElementById("resultRoute").innerHTML = this.responseText;
+            }
         }
     };
     xmlhttp.open("GET", "php/getRouteNotTransfer.php?F="+id_stopF+"&S="+id_stopS, true);
     xmlhttp.send();
 }
-
+function getPolylineForNotTransfer(id_route, id_start_stop, id_finish_stop) {
+    if (id_route == null || id_start_stop == null || id_finish_stop == null) {
+        return;
+    }
+    if (window.XMLHttpRequest) {
+        xmlhttp = new XMLHttpRequest();
+    }
+    else{
+        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function(){
+        if (this.readyState == 4 && this.status == 200) {
+            if (lineRouteNotTransfer != null) {
+                removePolyline();
+                removeMarkerAPolyline();
+                removeMarkerBPolyline();
+            }
+            if (lineRouteFrom != null) {
+                removePolylineFrom();
+                removeMarkerAPolyline();
+                removeMarkerBPolyline();
+                removeMarkerTFromPolyline();
+                removeMarkerTToPolyline();
+            }
+            if (lineRouteTo != null) {
+                removePolylineTo();
+                removeMarkerAPolyline();
+                removeMarkerBPolyline();
+                removeMarkerTFromPolyline();
+                removeMarkerTToPolyline();
+            }
+            Polyline(this.responseText);
+        }
+    };
+    xmlhttp.open("GET", "php/getPolylineForNotTransfer.php?r="+id_route+"&f="+id_start_stop+"&s="+id_finish_stop, true);
+    xmlhttp.send();
+}
 function getRouteOneTransfer() {
     var id_stopF = document.getElementById("IDpointA").value;
     var id_stopS = document.getElementById("IDpointB").value;
@@ -418,15 +686,20 @@ function getRouteOneTransfer() {
     }
     xmlhttp.onreadystatechange = function(){
         if (this.readyState == 4 && this.status == 200) {
+            if (this.responseText == "") {
+                document.getElementById("resultRoute").innerHTML = "На жаль, немає результатів за заданим маршрутом"
+                return;
+            }
             document.getElementById("resultRoute").innerHTML += this.responseText;
         }
     };
     xmlhttp.open("GET", "php/getRouteOneTransfer.php?F="+id_stopF+"&S="+id_stopS, true);
     xmlhttp.send();
 }
-function getRouteTwoTransfer() {
-    var id_stopF = document.getElementById("IDpointA").value;
-    var id_stopS = document.getElementById("IDpointB").value;
+function getPolylineForOneTransferFrom(id_routeF, id_routeS, id_from_stop, id_to_stop, id_start_stop, id_finish_stop) {
+    if (id_routeF == null || id_start_stop == null || id_from_stop == null) {
+        return;
+    }
     if (window.XMLHttpRequest) {
         xmlhttp = new XMLHttpRequest();
     }
@@ -435,9 +708,177 @@ function getRouteTwoTransfer() {
     }
     xmlhttp.onreadystatechange = function(){
         if (this.readyState == 4 && this.status == 200) {
-            document.getElementById("resultRoute").innerHTML += this.responseText;
+            if (lineRouteNotTransfer != null) {
+                removePolyline();
+                removeMarkerAPolyline();
+                removeMarkerBPolyline();
+            }
+            if (lineRouteFrom != null) {
+                removePolylineFrom();
+                removeMarkerAPolyline();
+                removeMarkerBPolyline();
+                removeMarkerTFromPolyline();
+                removeMarkerTToPolyline();
+            }
+            if (lineRouteTo != null) {
+                removePolylineTo();
+                removeMarkerAPolyline();
+                removeMarkerBPolyline();
+                removeMarkerTFromPolyline();
+                removeMarkerTToPolyline();
+            }
+            PolylineOneTransferFrom(this.responseText);
+            //checkStopTransfer(id_from_stop,id_to_stop);
+            getPolylineForOneTransferTo(id_routeS,id_to_stop,id_finish_stop);
         }
     };
-    xmlhttp.open("GET", "php/getRouteTwoTransfer.php?F="+id_stopF+"&S="+id_stopS, true);
+    xmlhttp.open("GET", "php/getPolylineForOneTransferFrom.php?route="+id_routeF+"&start="+id_start_stop+"&from="+id_from_stop, true);
     xmlhttp.send();
+}
+function getPolylineForOneTransferTo(id_routeS, id_to_stop, id_finish_stop) {
+    if (id_routeS == null || id_to_stop == null || id_finish_stop == null) {
+        return;
+    }
+    if (window.XMLHttpRequest) {
+        xmlhttp = new XMLHttpRequest();
+    }
+    else{
+        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function(){
+        if (this.readyState == 4 && this.status == 200) {
+            PolylineOneTransferTo(this.responseText);
+        }
+    };
+    xmlhttp.open("GET", "php/getPolylineForOneTransferTo.php?route="+id_routeS+"&finish="+id_finish_stop+"&to="+id_to_stop, true);
+    xmlhttp.send();
+}
+
+function getRouteByUser(id){
+    if (window.XMLHttpRequest) {
+        xmlhttp = new XMLHttpRequest();
+    }
+    else{
+        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function(){
+        if (this.readyState == 4 && this.status == 200) {
+            document.getElementById('user-numbers').innerHTML = this.responseText;
+        }
+    };
+    xmlhttp.open("GET", "php/getRoutesByUser.php?id="+id, true);
+    xmlhttp.send();
+}
+function deleteRouteByUser(id) {
+   if (window.XMLHttpRequest) {
+        xmlhttp = new XMLHttpRequest();
+    }
+    else{
+        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function(){
+        if (this.readyState == 4 && this.status == 200) {
+            alert(this.responseText);
+            document.getElementById('getUserRoute').onclick();
+        }
+    };
+    xmlhttp.open("GET", "php/deleteRouteByUser.php?id="+id, true);
+    xmlhttp.send();
+}
+function saveRouteUser(id, route) {
+    if (window.XMLHttpRequest) {
+        xmlhttp = new XMLHttpRequest();
+    }
+    else{
+        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function(){
+        if (this.readyState == 4 && this.status == 200) {
+            alert(this.responseText);
+            getRouteByUser(id);
+        }
+    };
+    xmlhttp.open("GET", "php/saveRouteUser.php?id="+id+"&r="+route, true);
+    xmlhttp.send();
+}
+function removePolyline() {
+    if (lineRouteNotTransfer != null) {
+        lineRouteNotTransfer.setMap(null);
+        directionsDisplayNotTransfer.setMap(null);
+    }
+}
+function removePolylineFrom() {
+    if (lineRouteFrom != null) {
+        lineRouteFrom.setMap(null);
+        directionsDisplayFrom.setMap(null);
+    }
+}
+function removePolylineTo() {
+    if (lineRouteTo != null) {
+        lineRouteTo.setMap(null);
+        directionsDisplayTo.setMap(null);
+    }
+}
+function removeMarkerAPolyline() {
+    if (markerStart != null) {
+        markerStart.setMap(null);
+    }
+}
+function removeMarkerTFromPolyline() {
+    if (markerTransferFrom != null) {
+        markerTransferFrom.setMap(null);
+    }
+}
+function removeMarkerTToPolyline() {
+    if (markerTransferTo != null) {
+        markerTransferTo.setMap(null);
+    }
+}
+function removeMarkerBPolyline() {
+    if (markerFinish != null) {
+        markerFinish.setMap(null);
+    }
+}
+function removeAllResults() {
+    document.getElementById('resultRoute').innerHTML = '';
+}
+function hoverBlockNumbers() {
+    var elems = document.getElementsByClassName('allNumbersRoutes');
+    for(var i=0; i<elems.length; i++)elems[i].style.display='none';
+}
+function showBlockNumbers() {
+    var elems = document.getElementsByClassName('allNumbersRoutes');
+    for(var i=0; i<elems.length; i++)elems[i].style.display='block';
+}
+function hoverBlockDirection() {
+    var elems = document.getElementsByClassName('direction');
+    for(var i=0; i<elems.length; i++)elems[i].style.display='none';
+}
+function showBlockDirection() {
+    var elems = document.getElementsByClassName('direction');
+    for(var i=0; i<elems.length; i++)elems[i].style.display='block';
+}
+function hoverBlockWeekend() {
+    var elems = document.getElementsByClassName('weekend');
+    for(var i=0; i<elems.length; i++)elems[i].style.display='none';
+}
+function showBlockWeekend() {
+    var elems = document.getElementsByClassName('weekend');
+    for(var i=0; i<elems.length; i++)elems[i].style.display='block';
+}
+function hoverBlockAllTimesStart() {
+    var elems = document.getElementsByClassName('allTimesStart');
+    for(var i=0; i<elems.length; i++)elems[i].style.display='none';
+}
+function showBlockAllTimesStart() {
+    var elems = document.getElementsByClassName('allTimesStart');
+    for(var i=0; i<elems.length; i++)elems[i].style.display='block';
+}
+function hoverBlockDetailsOfRoute() {
+    var elems = document.getElementsByClassName('detailOfRoute');
+    for(var i=0; i<elems.length; i++)elems[i].style.display='none';
+}
+function showBlockDetailsOfRoute() {
+    var elems = document.getElementsByClassName('detailOfRoute');
+    for(var i=0; i<elems.length; i++)elems[i].style.display='block';
 }

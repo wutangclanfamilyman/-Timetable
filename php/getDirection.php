@@ -12,7 +12,6 @@
 			INNER JOIN `Stop` AS s2 ON s2.`ID_Stop` = `Direction`.`ID_Finish_Stop` WHERE `Direction`.`ID_Route` = '".$r."'";
 	
 	$result = mysqli_query($con,$sql);
-	echo "<option selected>Не обрано</option>";
 	while ($row = mysqli_fetch_array($result)) {
 		echo "<option value=" . $row['ID_Direction'] . ">" . $row['First_Stop'] . " - " . $row['Second_Stop'] . "</option>";
 	}

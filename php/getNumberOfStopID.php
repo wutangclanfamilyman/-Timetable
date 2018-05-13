@@ -29,6 +29,6 @@
 		}
 		echo "<span> (на ".$time["Finish"].")</span>";
 	}
-	echo "<div class='buttonsForInput'><button id='pointA' data-toggle='tab' href='#route' value='".$s."' onclick='toInputA(this.value)'>A</button><button id='pointB' data-toggle='tab' href='#route' value='".$s."' onclick='toInputB(this.value)'>B</button></div>";
+	echo "<div class='buttonsForInput'><button id='pointA' data-toggle='tab' href='#route' value='".$s."' onclick='toInputA(this.value, ".$dir.")'>Маршрут звідси</button><button id='pointB' data-toggle='tab' href='#route' value='".$s."' onclick='toInputB(this.value)'>Маршрут сюди</button></div>";
 	mysqli_close($con);
 ?>

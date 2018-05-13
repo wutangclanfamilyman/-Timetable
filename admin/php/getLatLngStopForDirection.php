@@ -1,15 +1,14 @@
 <?php  
-
+	$S = intval($_GET['S']);
 	$con = mysqli_connect('localhost','root','','Transport');
 	if (!$con) {
 	    die('Could not connect: ' . mysqli_error($con));
 	}
 	mysqli_select_db($con,"ajax_demo");
-	$sql="SELECT ID_City, Name FROM City";
+	$sql="SELECT Latitude AS Lat, Longitude AS Lng FROM Stop WHERE ID_Stop = '".$S."'";
 	$result = mysqli_query($con,$sql);
-	echo "<option value='' class='active'>Не обрано</option>";
 	while ($row = mysqli_fetch_array($result)) {
-		echo "<option value=".$row['ID_City'].">".$row['Name']."</option>";
+		echo $row['Lat'].",".$row['Lng'];
 	}
 	mysqli_close($con);
 ?>

@@ -1,3 +1,4 @@
+
 html{
 	overflow-x: hidden;
 }
@@ -5,6 +6,57 @@ body{
 	width: 100%;
 	height: 100%;
 }
+.form-signin {
+    max-width: 300px;
+    padding: 19px 29px 29px;
+    margin: 0 auto 20px;
+    background-color: #fff;
+    border: 1px solid #e5e5e5;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+    -moz-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+    box-shadow: 0 1px 2px rgba(0,0,0,.05);
+}
+.form-signin .form-signin-heading,
+.form-signin .checkbox {
+    margin-bottom: 10px;
+}
+
+#p_prldr{
+position: fixed;
+left: 0;
+top: 0;
+right:0;
+bottom:0;
+background: #6392d3;
+z-index: 30;}
+ 
+.contpre small{font-size:25px;}
+ 
+.contpre{
+width: 300px;
+height: 100px;
+position: absolute;
+left: 50%;top: 48%;
+margin-left:-125px;
+margin-top:-75px;
+color:#fff;
+font-size:36px;
+letter-spacing:-2px;
+text-align:center;
+line-height:35px;}
+ 
+#p_prldr .svg_anm {
+position: absolute;
+width: 61px;
+height: 61px;
+background: url(../img/oval.svg) center center no-repeat;
+background-size:61px;  
+padding: 10px;
+margin: -36px 0 0 -16px;}
+
 #map {
 	position: absolute;
     height: 100%;
@@ -35,8 +87,8 @@ body{
 	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
 }
 div#infoWindow{
-	max-width: 200px;
-	min-height: 40px;
+	max-width: 320px;
+	min-height: 50px;
 }
 .numbersWindow{
 	margin: 2px;
@@ -73,7 +125,7 @@ div#infoWindow{
 		color: #fff;	
 		text-align: center;
 		display: inline-block;
-		max-width: 50px;
+		max-width: 150px;
 		text-decoration: none;
 		cursor: pointer;
 		&:hover {
@@ -83,6 +135,7 @@ div#infoWindow{
 		}
 	}
 	button#pointB{
+
 		border: 1px solid #444;
 		border-radius: 2px;
 		background: #ff2725;
@@ -91,7 +144,7 @@ div#infoWindow{
 		color: #fff;	
 		text-align: center;
 		display: inline-block;
-		max-width: 50px;
+		max-width: 150px;
 		text-decoration: none;
 		cursor: pointer;
 		&:hover {
@@ -101,6 +154,35 @@ div#infoWindow{
 		}
 	}
 }
+.ui-autocomplete {
+     z-index: 9999 !important;
+     background-color: #fff;
+     width: 180px;
+     height: 200px;
+     overflow-x: hidden;
+     overflow-y: scroll;
+     border: 1px solid #63b1d7;
+     padding-top: 5px;
+     padding-bottom: 5px;
+     list-style-image: url('../img/stop.png');
+     border-top: none;
+     border-radius: 0px 0px 10px 10px;
+     li{
+     	&:hover{
+     		background-color: #339bceb5;
+     		color: #fff;
+     	};
+     }
+     a{
+     	font-size: 14px;
+     	color: #333;
+     	&:hover{
+     		cursor: pointer;
+     		color: #fff;	
+     		text-decoration: none;
+     	};
+     }
+}
 div#RoutePanel{
 	z-index: 3;
 	position: absolute;
@@ -108,6 +190,7 @@ div#RoutePanel{
 	background-clip: padding-box;
 	width: 300px;
 	height: 100%;
+	display: inline-block;
 	padding-right: 10px;
 	padding-left: 10px;
 	ul{
@@ -118,6 +201,7 @@ div#RoutePanel{
 		}
 	}
 	.input-start{
+		z-index: 10000;
 		margin: 2px;
 		margin-top: 4px;
 		input#startInput{
@@ -129,6 +213,7 @@ div#RoutePanel{
 		}
 	}
 	.input-finish{
+		z-index: 10000;
 		margin: 2px;
 		margin-top: 2px;
 		input#finishInput{
@@ -150,52 +235,156 @@ div#RoutePanel{
 		margin: 0 auto;
 	}
 	div#resultRoute{
+		overflow-x: none;
+		overflow-y: scroll;
+		height: 450px;
 		margin-top: 5px;
-		.container-route{
-			margin-top: 10px;
-			cursor: pointer;
-			border: 1px solid #fff;
-			border-radius: 2px;
-			background: #fff;
-			.price{
-				margin: 3px;
-				font-size: 16px;
-				float: left;
-				margin-left: 24px;
-			}
-			.time{
-				margin: 3px;
-				margin-right: 24px;
-				font-size: 16px;
-				float: right;
-			}
+		.container-route-not-transfer{
+			float:left;
+			width:96%;
+			background-color: #fff;
+			border: 1px solid #444;
+			border-radius: 10px;
+			box-sizing:border-box;
+			margin:2%;
 			.route{
-				margin: 5px 15px;
-				.number{
-				font-size: 18px;
-				color: #fff;
-				padding: 3px;
-				background: #6392d3;
+				padding: 10px;
+				button{
+					padding: 5px 10px;
+					font-size: 16px;
+					font-weight: bold;
+					margin: 2%;
+					border-radius: 10px;
+					color: #fff;
+					border: none;
+					background-color: #6392d3;
+					&:hover{
+						background-color: ##3774ca;
+					};
+				}
+				label{
+					border-radius: 2px;
+					padding: 2px;
+					white-space: normal;
+				    width: 100px;
+				    display: inline-block;
 				}
 			}
-			.transfer{
-				margin: 0 auto;
-    			padding: 10px;
-    			color: #333;
-    			.resultStopFrom{
-					color: #333;
+			.info{
+				padding: 10px 10px;
+				.price{
+					padding: 1px 5px 4px 1px;
+					margin: 2%;
+					label{
+						padding: 5px;
+						i{
+							color: #fff;
+						}
+						font-size: 16px;
+						color:#fff;
+					}
+				}
+				.time{
+					padding: 32px 5px 1px 2px;
+					margin: 2%;
+					label{
+						padding: 5px;
+						i{
+							color: #fff;
+						}
+						font-size: 16px;
+						color:#fff;
+					}
+				}
+				.show{
+					padding: 10px 23px;
+					margin-top: 5%;
+					a{
+						padding: 5px;
+						i{
+							color: #fff;
+						}
+						font-size: 14px;
+						color:#fff;
+					}
+				}
+				}
+		}
+		.container-route-one-transfer{
+			float:left;
+			width:96%;
+			background-color: #fff;
+			border: 1px solid #444;
+			border-radius: 10px;
+			box-sizing:border-box;
+			margin:2%;
+			.route{
+				padding: 10px;
+				padding-left: 30px;
+				button{
+					margin-top: 1%;
+					margin-bottom: 1%;
+					padding: 5px 10px;
+					font-size: 16px;
 					font-weight: bold;
-					text-decoration: none;
-    			}
-    			.resultStopTo{
-					color: #333;
-					font-weight: bold;
-					text-decoration: none;
-    			}
+					border-radius: 10px;
+					color: #fff;
+					border: none;
+					background-color: #6392d3;
+					&:hover{
+						background-color: ##3774ca;
+					};
+				}
+				label{
+					border-radius: 2px;
+					text-align: center;
+					padding: 2px;
+					white-space: normal;
+				}
+			}
+			.info{
+				padding: 10px 30px;
+				.price{
+					padding: 5px;
+					label{
+						padding: 5px;
+						i{
+							color: #fff;
+						}
+						font-size: 16px;
+						color:#fff;
+					}
+				}
+				.time{
+					padding: 5px;
+					margin-top: 77%;
+					margin-bottom:5%;
+					label{
+						padding: 5px;
+						i{
+							color: #fff;
+						}
+						font-size: 16px;
+						color:#fff;
+					}
+				}
+				.show{
+					padding: 5px;
+					margin-top: 5%;
+					a{
+						padding: 5px;
+						i{
+							color: #fff;
+						}
+						font-size: 14px;
+						color:#fff;
+					}
+				}
 			}
 		}
 	}
 }	
+
 div#timetable{
 	margin: 0 auto;
 	margin-bottom: 10px;
@@ -214,6 +403,7 @@ div#timetable{
 		}
 	}
 	.allNumbersRoutes{
+		display: none;
 		overflow-x: hidden;
 		overflow-y: scroll;
 		border-radius: 2px;
@@ -238,9 +428,14 @@ div#timetable{
 			font-size: 14px;
 			border: 1px solid #7c7c7b;
 			border-radius: 6px;
+			&:focus{
+				background: #0335ac;
+				outline: 0;
+			};
 		}
 	}
 	.direction{
+		display: none;
 		font-size: 14px;
 		margin: 0 auto;
 		margin-top: 15px;
@@ -253,8 +448,22 @@ div#timetable{
 		select#direction{
 			max-width: 90%;
 		}
+		button#saveRouteUser{
+			border: none;
+			background-color: #3394c3;
+			color: #fff;
+			border-radius: 10px;
+			font-size: 16px;
+			&:focus{
+				outline: 0;
+				};
+			&:hover{
+				background-color: #aadaff;
+			};
+		}
 	}
 	.weekend{
+		display: none;
 		font-size: 14px;
 		margin: 0 auto;
 		margin-top: 15px;
@@ -269,6 +478,7 @@ div#timetable{
 		}
 	}
 	.allTimesStart{
+		display: none;
 		overflow-x: hidden;
 		overflow-y: scroll;
 		border: 1px solid #777;
@@ -308,6 +518,7 @@ div#timetable{
     	}
 	}
 	.detailOfRoute{
+	display: none;
 	overflow-x: hidden;
 	overflow-y: scroll;
 	margin-top: 10px;
@@ -328,30 +539,162 @@ div#timetable{
 		}
 	}
 }
-
-	/*.buttons{
-		margin: 10px;
-		a#btnInfoOfStops{
-			float: left;
-			background-color: #fff;
-			border: 1px;
-			border-radius: 150px;
-			width: 32px;
-			height: 32px;
-			background-image: url('../img/more-price-before.png');
+div#user{
+	z-index: 10;
+	margin: 5% 76.5%;
+	position: absolute;
+	width: 20%;
+	height: 35%;
+	display: block;
+	.tab-content {
+	  color: white;
+	  background-color: #428bca;
+	  opacity: 0.8;
+	  padding : 5px 15px;
+	  border-radius: 10px 0px 10px 10px;
+	  button{
+	  	background-color: #fff;
+	  	color: #428bca;
+	  	&:hover{
+	  		background-color: #428bac;
+	  		color: #fff;
+	  	};
+	  }
+	}
+	div#authorization{
+		a{
+			font-size: 14px;
+			color: #fff;
 			&:hover{
-				background-image: url('../img/more-price-after.png');
-			};
+					text-decoration: none;
+				};
 		}
-		a#btnSaveNumberRoute{
-			float: right;
-			background-color: #fff;
-			border: 0px;
-			width: 32px;
-			height: 32px;
-			background-image: url('../img/save_number_before.png');
+		.register{
+			label{
+				padding: 5px;
+			}
+		}
+		.checkbox{
+			margin-left: 25px;
+		}
+	}
+	div#registration{
+		a{
+			font-size: 14px;
+			color: #fff;
 			&:hover{
-				background-image: url('../img/save_number_after.png');
-			};
+					text-decoration: none;
+				};
 		}
-	}*/
+		.authorization{
+			label{
+				padding: 5px;
+			}
+		}
+	}
+	div#tab-user-numbers{
+		margin-top: 10px;
+		margin-bottom: 5px;
+		label{
+			padding: 6px;
+		}
+		a{
+			font-size: 13px;
+			color: #fff;
+			&:hover{
+					text-decoration: none;
+					color: #fff;
+				};
+		}
+		form{
+			font-size: 13px;
+			color: #fff;
+			display: inline;
+			button{
+				font-size: 13px;
+				color: #fff;
+				background: none;
+				border: none;
+				&:hover{
+					text-decoration: none;
+					outline: 0;
+				};
+			}
+		}
+		div#user-numbers{
+			max-height: 250px;
+			overflow-y: scroll;
+			overflow-x: hidden;
+			.table-condensed{
+				button{
+					border: none;
+				    font-size: 18px;
+				    padding: 5px 10px;
+				    border-radius: 10px;
+				}
+				a{
+					i{
+						margin-top: 4px;
+						&:hover{
+							background-color: #849572;
+							cursor: pointer;
+						};
+					}
+				}
+			}
+		}
+	}
+	div#tab-user-info{
+		margin-top: 10px;
+		margin-bottom: 5px;
+		label{
+			padding: 6px;
+		}
+		a{
+			font-size: 13px;
+			color: #fff;
+			&:hover{
+					text-decoration: none;
+					color: #fff;
+				};
+		}
+		form{
+			font-size: 13px;
+			color: #fff;
+			display: inline;
+			button{
+				font-size: 13px;
+				color: #fff;
+				background: none;
+				border: none;
+				&:hover{
+					text-decoration: none;
+					outline: 0;
+				};
+			}
+		}
+		.edit{
+			background-color: #fff;
+			text-transform: uppercase;
+			font-weight: bold;
+			color: #428bac;
+		}
+	}
+}
+div#user-button{
+	position: absolute;
+	z-index: 10;
+	margin: 2% 95%;
+	background-color: none;
+	button{
+		background-color: #fff;
+		border-radius: 100px;
+		i{
+			background-color: #fff;
+			color: #333;
+		}
+		&:focus{
+			outline: 0;
+		};
+	}
+}
