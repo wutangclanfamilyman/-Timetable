@@ -1,10 +1,6 @@
 <?php  
 	$R = intval($_GET['R']);
-	$con = mysqli_connect('localhost','root','','Transport');
-	if (!$con) {
-	    die('Could not connect: ' . mysqli_error($con));
-	}
-	mysqli_select_db($con,"ajax_demo");
+	include "../../php/config.php";
 	$sql="SELECT  `Transfer`.`ID_Transfer` AS ID,s1.Name AS F, s2.Name AS T, r1.Number AS R, `Transfer`.`ID_Stop_From` AS ID_From, `Transfer`.`ID_Stop_To` AS ID_To  FROM `Transfer` 
 INNER JOIN Stop AS s1 ON s1.`ID_Stop` = `Transfer`.`ID_Stop_From`
 INNER JOIN Stop AS s2 ON s2.`ID_Stop` = `Transfer`.`ID_Stop_To`

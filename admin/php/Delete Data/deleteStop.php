@@ -2,11 +2,8 @@
 
 	$S = intval($_GET['S']);
 
-	$con = mysqli_connect('localhost','root','','Transport');
-	if (!$con) {
-	    die('Could not connect: ' . mysqli_error($con));
-	}
-	mysqli_select_db($con,"ajax_demo");
+	include "../../php/config.php";
+	
 	$sql="DELETE FROM `Stop` WHERE `Stop`.`ID_Stop` = '".$S."'";
 	$result = mysqli_query($con,$sql);
 	if (!$result) {

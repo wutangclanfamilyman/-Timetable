@@ -4,11 +4,8 @@
     $S = intval($_GET['from']);
     $R = intval($_GET['route']);
   $outp = "[";
-	$con = mysqli_connect('localhost','root','','Transport');
-	if (!$con) {
-	    die('Could not connect: ' . mysqli_error($con));
-	}
-	mysqli_select_db($con,"ajax_demo");
+	
+	include "../php/config.php";
   
 	$sql="SELECT `Complex_Route`.`ID_Direction` AS D FROM `Complex_Route` WHERE `Complex_Route`.`ID_Route` = ".$R." AND `Complex_Route`.`ID_Stop` IN (".$F.",".$S.") LIMIT 1";
 	

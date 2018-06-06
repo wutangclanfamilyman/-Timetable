@@ -2,11 +2,9 @@
 
 	$a = intval($_GET['a']);
 	$b = intval($_GET['b']);
-	$con = mysqli_connect('localhost','root','','Transport');
-	if (!$con) {
-	    die('Could not connect: ' . mysqli_error($con));
-	}
-	mysqli_select_db($con,"ajax_demo");
+	
+	include "../php/config.php";
+	
 	$sql="SELECT `Complex_Route`.`ID_Route` AS Route FROM `Complex_Route` WHERE `Complex_Route`.`ID_Stop` IN ('".$a."','".$b."')";
 	$arr = array();
 	$result = mysqli_query($con,$sql);

@@ -1,11 +1,8 @@
 <?php  
 
 	$c = intval($_GET['c']);
-	$con = mysqli_connect('localhost','root','','Transport');
-	if (!$con) {
-	    die('Could not connect: ' . mysqli_error($con));
-	}
-	mysqli_select_db($con,"ajax_demo");
+	
+	include "../php/config.php";
 
 	$sql="SELECT r1.ID_Route AS ID, r1.Number AS Num FROM `RouteByCity` INNER JOIN Route AS r1 ON r1.ID_Route = `RouteByCity`.`ID_Route` WHERE `RouteByCity`.`ID_City` = '".$c."'";
 	

@@ -1,9 +1,5 @@
 <?php  
-	$con = mysqli_connect('localhost','root','','Transport');
-	if (!$con) {
-	    die('Could not connect: ' . mysqli_error($con));
-	}
-	mysqli_select_db($con,"ajax_demo");
+	include "../../php/config.php";
 	$sql="SELECT ID_Route AS ID, Number as Num FROM Route";
 	$result = mysqli_query($con,$sql);
 	echo "<option value='' changed>Не обрано</option>";

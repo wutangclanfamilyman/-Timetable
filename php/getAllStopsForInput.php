@@ -3,19 +3,11 @@
 	header("Content-Type: application/json; charset=UTF-8");
 
 	include "../php/config.php";
-
+	 
 	$sql="SELECT `Stop`.`ID_Stop` AS ID , `Stop`.`Name` AS NameStop, `Stop`.`Latitude` AS Latitude, `Stop`.`Longitude` AS Longitude, city.Name AS NameCity FROM Stop INNER JOIN City AS city ON city.`ID_City` = `Stop`.`ID_City`";
 	$result = mysqli_query($con,$sql);
-	$outp = "[";
-	while($rs = $result->fetch_array(MYSQLI_ASSOC)) {
-    	if ($outp != "[") {$outp .= ",";}
-    	$outp .= '{"id":"'  . $rs["ID"] . '",';
-    	$outp .= '"title":"'  . $rs["NameStop"] . '",';
-    	$outp .= '"city":"'  . $rs["NameCity"] . '",';
-    	$outp .= '"lat":"'   . $rs["Latitude"]        . '",';
-    	$outp .= '"lng":"'. $rs["Longitude"]     . '"}'; 
+	while($rs = mysqli_fetch_array($result)) {
+    	 echo "<option data-value=".$rs['ID'].">".$rs['NameStop']." (".$rs['NameCity'].")</option>";
 	}
-	$outp .="]";
-	echo $outp;
 	mysqli_close($con);
 ?>

@@ -2,11 +2,8 @@
 
 	$ID = intval($_GET['ID']);
 
-	$con = mysqli_connect('localhost','root','','Transport');
-	if (!$con) {
-	    die('Could not connect: ' . mysqli_error($con));
-	}
-	mysqli_select_db($con,"ajax_demo");
+	include "../../php/config.php";
+	
 	$sql="DELETE FROM `Complex_Route` WHERE `Complex_Route`.`ID_Complex_Route` = ".$ID."";
 	$result = mysqli_query($con,$sql);
 	if (!$result) {

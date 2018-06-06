@@ -6,11 +6,8 @@
 	$time = strval($_GET['Time']);
 	$price = strval($_GET['Price']);
 
-	$con = mysqli_connect('localhost','root','','Transport');
-	if (!$con) {
-	    die('Could not connect: ' . mysqli_error($con));
-	}
-	mysqli_select_db($con,"ajax_demo");
+	include "../../php/config.php";
+	
 	$sql="UPDATE `Info_About_Route` SET `ID_Route` = '".$route."',  `ID_Direct` = '".$direct."', `ID_Reverse` = '".$reverse."', `Work_Time` = '".$time."', `Max_Price` = '".$price."', `Update_Date` = CURDATE() WHERE `ID_IAR` = '".$id."'";
 	$result = mysqli_query($con,$sql);
 	if (!$result) {

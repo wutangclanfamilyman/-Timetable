@@ -2,11 +2,9 @@
 
 	$id = intval($_GET['id']);
 	$route = intval($_GET['r']);
-	$con = mysqli_connect('localhost','root','','Transport');
-	if (!$con) {
-	    die('Could not connect: ' . mysqli_error($con));
-	}
-	mysqli_select_db($con,"ajax_demo");
+	
+	include "../php/config.php";
+	
 	$sql = "SELECT `Users_Route`.`ID_Users_Route` FROM `Users_Route` WHERE `Users_Route`.`ID_User` = ".$id." AND `Users_Route`.`ID_Route` = ".$route."";
 	$res = mysqli_query($con,$sql);
 	if ($res->num_rows > 0) {

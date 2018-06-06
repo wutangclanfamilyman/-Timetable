@@ -3,11 +3,8 @@
 	$R = intval($_GET['R']);
 	$C = explode(",", $_GET['C']);
 
-	$con = mysqli_connect('localhost','root','','Transport');
-	if (!$con) {
-	    die('Could not connect: ' . mysqli_error($con));
-	}
-	mysqli_select_db($con,"ajax_demo");
+	include "../../php/config.php";
+	
 	$del = "DELETE FROM `RouteByCity` WHERE `RouteByCity`.`ID_Route` = '".$R."'";
 	$res_del = mysqli_query($con, $del);
 	for ($i=0; $i < count($C); $i++) { 

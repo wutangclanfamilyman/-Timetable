@@ -1,16 +1,15 @@
 <?php  
-
+	
 	$F = intval($_GET['F']);
 	$S = intval($_GET['S']);
 	$From = [];
 	$To = [];
 	$FromStop;
 	$ToStop;
-	$con = mysqli_connect('localhost','root','','Transport');
-	if (!$con) {
-	    die('Could not connect: ' . mysqli_error($con));
-	}
-	mysqli_select_db($con,"ajax_demo");
+	date_default_timezone_set("Europe/Kiev");
+	$today = date("H:i");
+	include "../php/config.php";
+	
 	$sql="SELECT `Stop`.`Name` AS Name FROM `Stop` WHERE `Stop`.`ID_Stop` = ".$F."";
 	$result = mysqli_query($con,$sql);
 	if (!$result) {
@@ -60,8 +59,8 @@
 					return;
 				}
 				while ($row = mysqli_fetch_array($result)) {
-					$sqlS = "SELECT TIMESTAMPDIFF(MINUTE, MIN(`Complex_Route`.`Span`), MAX(`Complex_Route`.`Span`)) AS T, Secondtime.T AS ST, FPrice.M AS FMoney, SPrice.M AS SMoney
-						FROM `Complex_Route`, (SELECT TIMESTAMPDIFF(MINUTE, MIN(`Complex_Route`.`Span`), MAX(`Complex_Route`.`Span`)) AS T FROM `Complex_Route` WHERE `Complex_Route`.`ID_Route` = ".$row['SR_ID']." AND `Complex_Route`.`ID_Stop` IN (".$row['SS_ID'].",".$S.")) AS Secondtime, (SELECT Money AS M FROM Price WHERE ID_Route = ".$row['FR_ID']." AND ID_First_Stop = ".$F." AND ID_Second_Stop = ".$row['FS_ID'].") AS FPrice, (SELECT Money AS M FROM Price WHERE ID_Route = ".$row['SR_ID']." AND ID_First_Stop = ".$row['SS_ID']." AND ID_Second_Stop = ".$S.") SPrice WHERE `Complex_Route`.`ID_Route` = ".$row['FR_ID']." AND `Complex_Route`.`ID_Stop` IN (".$F.",".$row['FS_ID'].")";
+					$sqlS = "SELECT TIMESTAMPDIFF(MINUTE, MIN(`Complex_Route`.`Span`), MAX(`Complex_Route`.`Span`)) AS T, Secondtime.T AS ST, FPrice.M AS FMoney, SPrice.M AS SMoney, Dir.Direction AS Direction
+						FROM `Complex_Route`, (SELECT TIMESTAMPDIFF(MINUTE, MIN(`Complex_Route`.`Span`), MAX(`Complex_Route`.`Span`)) AS T FROM `Complex_Route` WHERE `Complex_Route`.`ID_Route` = ".$row['SR_ID']." AND `Complex_Route`.`ID_Stop` IN (".$row['SS_ID'].",".$S.")) AS Secondtime, (SELECT Money AS M FROM Price WHERE ID_Route = ".$row['FR_ID']." AND ID_First_Stop = ".$F." AND ID_Second_Stop = ".$row['FS_ID'].") AS FPrice, (SELECT Money AS M FROM Price WHERE ID_Route = ".$row['SR_ID']." AND ID_First_Stop = ".$row['SS_ID']." AND ID_Second_Stop = ".$S.") SPrice, (SELECT `Complex_Route`.`ID_Direction` AS Direction FROM `Complex_Route` WHERE `Complex_Route`.`ID_Stop` = '".$F."') AS Dir WHERE `Complex_Route`.`ID_Route` = ".$row['FR_ID']." AND `Complex_Route`.`ID_Stop` IN (".$F.",".$row['FS_ID'].")";
 					$results = mysqli_query($con,$sqlS);
 					while ($rw = mysqli_fetch_array($results)){
 						$time = $rw['T'] + $rw['ST'];
@@ -70,9 +69,17 @@
 							echo "Немає результатів!";
 							return;
 						}
-						echo "<div class='container-route-one-transfer'> 
+						$sqlTime = "SELECT `Departure_Time`.`Time_Start` AS Start, `Complex_Route`.`Span` AS Span FROM `Departure_Time`, `Complex_Route` WHERE `Departure_Time`.`ID_Route` = '".$row["FR_ID"]."' AND `Complex_Route`.`ID_Stop` = '".$F."' AND `Departure_Time`.`ID_Direction` = '".$rw['Direction']."' AND `Departure_Time`.`Weekend` = 0";
+						$resultTime = mysqli_query($con, $sqlTime);
+						while ($rowTime = mysqli_fetch_array($resultTime)) {
+							$span = strtotime($rowTime["Span"]) - strtotime("00:00:00"); // это просто время
+							$start = strtotime($rowTime["Start"]);
+    						$date = date("H:i", $start + $span) . "\n";
+    						if ($today < $date) {
+					    		echo "<div class='container-route-one-transfer'> 
 		               <div class='row'>
 		                <div class='col-sm-6 col-xs-6 col-md-6 route text-center'>
+		                	<p class='time-start'>в ".$date."</p>
 		                	<div class='row'><label class='label label-info'>".$FromStop."</label></div>
                       		<div class='row'><i class='fa fa-ellipsis-v'></i></div>
 		                  <div class='row'>
@@ -107,9 +114,12 @@
 		                </div>
 		               </div>
 		             </div>";
+					    		break;
+					    		}
+						}
+						}
 					}
 				}
 		}
-	}
 	mysqli_close($con);
 ?>

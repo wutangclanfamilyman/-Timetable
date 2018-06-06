@@ -4,11 +4,8 @@
 	$lat = strval($_GET['lat']);
 	$lng = strval($_GET['lng']);
 
-	$con = mysqli_connect('localhost','root','','Transport');
-	if (!$con) {
-	    die('Could not connect: ' . mysqli_error($con));
-	}
-	mysqli_select_db($con,"ajax_demo");
+	include "../../php/config.php";
+	
 	$sql="UPDATE `Stop` SET `Name` = '".$n."', `Latitude` = '".$lat."', `Longitude` = '".$lng."' WHERE `ID_Stop` = '".$id."'";
 	$result = mysqli_query($con,$sql);
 	if (!$result) {

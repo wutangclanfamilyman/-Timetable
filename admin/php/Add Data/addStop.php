@@ -5,11 +5,8 @@
 	$lat = strval($_GET['lat']);
 	$lng = strval($_GET['lng']);
 
-	$con = mysqli_connect('localhost','root','','Transport');
-	if (!$con) {
-	    die('Could not connect: ' . mysqli_error($con));
-	}
-	mysqli_select_db($con,"ajax_demo");
+	include "../../php/config.php";
+	
 	$sql="INSERT INTO `Stop`(`ID_City`, `Name`, `Latitude`, `Longitude`) VALUES ('".$c."', '".$n."', '".$lat."', '".$lng."')";
 	$result = mysqli_query($con,$sql);
 	if (!$result) {

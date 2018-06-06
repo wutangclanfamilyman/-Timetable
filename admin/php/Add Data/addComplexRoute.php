@@ -5,11 +5,9 @@
 
 	$S = explode(",", $_GET['S']);
 	$P = explode(",", $_GET['P']);		
-	$con = mysqli_connect('localhost','root','','Transport');
-	if (!$con) {
-	    die('Could not connect: ' . mysqli_error($con));
-	}
-	mysqli_select_db($con,"ajax_demo");
+	
+	include "../../php/config.php";
+	
 	for ($i=0; $i < count($S); $i++) { 
 		
 		$sql="INSERT INTO `Complex_Route`(`ID_Route`, `ID_Direction`, `ID_Stop`, `Span`, `Priority`) 

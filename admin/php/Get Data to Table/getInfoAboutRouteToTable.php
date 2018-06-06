@@ -1,10 +1,6 @@
 <?php  
 	$R = intval($_GET['R']);
-	$con = mysqli_connect('localhost','root','','Transport');
-	if (!$con) {
-	    die('Could not connect: ' . mysqli_error($con));
-	}
-	mysqli_select_db($con,"ajax_demo");
+	include "../../php/config.php";
 	$sql="SELECT `Info_About_Route`.`ID_IAR` AS ID, `Info_About_Route`.`ID_Route` AS ID_Route, `Info_About_Route`.`ID_Direct` AS ID_Direct, `Info_About_Route`.`ID_Reverse` AS ID_Reverse, Dir.FStop AS FStop, Dir.SStop AS SStop, `Info_About_Route`.`Max_Price` AS Price, `Info_About_Route`.`Work_Time` AS Time, `Info_About_Route`.`Update_Date` AS Date FROM `Info_About_Route`,(SELECT `ID_Direction` AS ID, s1.ID_Stop AS ID_FStop, s1.ID_City AS ID_FStop_City, s2.ID_City AS ID_SStop_City, s2.ID_Stop AS ID_SStop, s1.Name AS FStop, s2.Name AS SStop FROM `Direction` 
 INNER JOIN Stop AS s1 ON `Direction`.`ID_Start_Stop` = s1.`ID_Stop`
 INNER JOIN Stop AS s2 ON `Direction`.`ID_Finish_Stop` = s2.`ID_Stop` 

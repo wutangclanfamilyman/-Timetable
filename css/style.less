@@ -90,6 +90,10 @@ div#infoWindow{
 	max-width: 320px;
 	min-height: 50px;
 }
+div#searchWindow{
+	max-width: 320px;
+	min-height: 20px;
+}
 .numbersWindow{
 	margin: 2px;
 	button#number{
@@ -110,8 +114,9 @@ div#infoWindow{
 			text-decoration: none;
 		}
 	}
-	span{
-		font-size: 12px;
+	.time-start{
+			font-size: 14px;
+			font-weight: 400;
 	}
 }
 .buttonsForInput{
@@ -205,11 +210,22 @@ div#RoutePanel{
 		margin: 2px;
 		margin-top: 4px;
 		input#startInput{
+			width: 85%;
+			display: inline;
 			padding-left: 25px;
 			background: url(../img/marker-a-input.png) no-repeat left;
 			&:focus{
 				background-color: #fff;
 			};
+		}
+		button{
+			background: none;
+			outline: none;
+			color: #00bd00;
+			background-color: #fff;
+			border-radius: 15px;
+			border: none;
+			font-size: 18px;
 		}
 	}
 	.input-finish{
@@ -217,11 +233,22 @@ div#RoutePanel{
 		margin: 2px;
 		margin-top: 2px;
 		input#finishInput{
+			width: 85%;
+			display: inline;
 			padding-left: 25px;
 			background: url(../img/marker-b-input.png) no-repeat left;
 			&:focus{
 				background-color: #fff;
 			};
+		}
+		button{
+			background: none;
+			outline: none;
+			color: #ff2725;
+			background-color: #fff;
+			border-radius: 15px;
+			border: none;
+			font-size: 18px;
 		}
 	}
 	.btn-send{
@@ -247,6 +274,12 @@ div#RoutePanel{
 			border-radius: 10px;
 			box-sizing:border-box;
 			margin:2%;
+			.time-start{
+				font-size: 12px;
+    			color: #333;
+    			font-weight: 700;
+    			margin-bottom: -2px;
+			}
 			.route{
 				padding: 10px;
 				button{
@@ -318,6 +351,12 @@ div#RoutePanel{
 			border-radius: 10px;
 			box-sizing:border-box;
 			margin:2%;
+			.time-start{
+				font-size: 12px;
+    			color: #333;
+    			font-weight: 700;
+    			margin-bottom: -2px;
+			}
 			.route{
 				padding: 10px;
 				padding-left: 30px;
@@ -685,6 +724,23 @@ div#user-button{
 	position: absolute;
 	z-index: 10;
 	margin: 2% 95%;
+	background-color: none;
+	button{
+		background-color: #fff;
+		border-radius: 100px;
+		i{
+			background-color: #fff;
+			color: #333;
+		}
+		&:focus{
+			outline: 0;
+		};
+	}
+}
+div#my-location-button{
+	position: absolute;
+	z-index: 10;
+	margin: 2% 92%;
 	background-color: none;
 	button{
 		background-color: #fff;

@@ -1,10 +1,6 @@
 <?php  
 	$C = intval($_GET['C']);
-	$con = mysqli_connect('localhost','root','','Transport');
-	if (!$con) {
-	    die('Could not connect: ' . mysqli_error($con));
-	}
-	mysqli_select_db($con,"ajax_demo");
+	include "../../php/config.php";
 	$sql="SELECT `Stop`.`ID_Stop` AS ID, c.`Name` AS City, `Stop`.`Name` AS Name, `Stop`.`Latitude` AS Lat, `Stop`.`Longitude` AS Lng FROM `Stop` INNER JOIN `City` AS c ON c.ID_City = `Stop`.`ID_City` WHERE `Stop`.`ID_City` = ".$C."";
 	$result = mysqli_query($con,$sql);
 	echo "<thead>

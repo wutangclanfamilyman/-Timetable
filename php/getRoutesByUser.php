@@ -1,10 +1,8 @@
 <?php  
   $id = $_GET['id'];
-	$con = mysqli_connect('localhost','root','','Transport');
-	if (!$con) {
-	    die('Could not connect: ' . mysqli_error($con));
-	}
-	mysqli_select_db($con,"ajax_demo");
+	
+  include "../php/config.php";
+  
 	$sql="SELECT `Users_Route`.ID_Users_Route AS ID, r.ID_Route AS Route, r.Number AS Num FROM `Users_Route` INNER JOIN `Route` AS r ON r.ID_Route = `Users_Route`.`ID_Route` WHERE `Users_Route`.`ID_User` = ".$id."";
 	$result = mysqli_query($con,$sql);
 	echo "<table class='table table-condensed'><thead>

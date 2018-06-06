@@ -3,11 +3,7 @@
   $D = intval($_GET['D']);
   $W = intval($_GET['W']);
 
-  $con = mysqli_connect('localhost','root','','Transport');
-  if (!$con) {
-      die('Could not connect: ' . mysqli_error($con));
-  }
-  mysqli_select_db($con,"ajax_demo");
+  include "../../php/config.php";
   $sql="SELECT ID_Time_Departure AS ID ,Time_Start AS Time FROM Departure_Time WHERE `Departure_Time`.`ID_Direction` = ".$D." AND `Departure_Time`.`Weekend` = ".$W."";
   $result = mysqli_query($con,$sql);
   echo "<thead>

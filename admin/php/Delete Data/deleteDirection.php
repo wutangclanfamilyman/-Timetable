@@ -2,11 +2,8 @@
 
 	$D = intval($_GET['D']);
 
-	$con = mysqli_connect('localhost','root','','Transport');
-	if (!$con) {
-	    die('Could not connect: ' . mysqli_error($con));
-	}
-	mysqli_select_db($con,"ajax_demo");
+	include "../../php/config.php";
+	
 	$sql="DELETE FROM `Direction` WHERE `Direction`.`ID_Direction` = '".$D."'";
 	$result = mysqli_query($con,$sql);
 	if (!$result) {

@@ -2,11 +2,8 @@
 
 	$r = strval($_GET['r']);
 
-	$con = mysqli_connect('localhost','root','','Transport');
-	if (!$con) {
-	    die('Could not connect: ' . mysqli_error($con));
-	}
-	mysqli_select_db($con,"ajax_demo");
+	include "../../php/config.php";
+	
 	$sql="INSERT INTO `Route`(`Number`) VALUES ('".$r."')";
 	$result = mysqli_query($con,$sql);
 	if (!$result) {

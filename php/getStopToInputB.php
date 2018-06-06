@@ -1,11 +1,8 @@
 <?php  
 
 	$s = intval($_GET['s']);
-	$con = mysqli_connect('localhost','root','','Transport');
-	if (!$con) {
-	    die('Could not connect: ' . mysqli_error($con));
-	}
-	mysqli_select_db($con,"ajax_demo");
+	
+	include "../php/config.php";
 
 	$sql="SELECT `Stop`.`Name` AS Name FROM `Stop` WHERE `Stop`.`ID_Stop` = ".$s."";
 	

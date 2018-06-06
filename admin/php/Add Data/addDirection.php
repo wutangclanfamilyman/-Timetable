@@ -4,11 +4,8 @@
 	$F = strval($_GET['F']);
 	$S = strval($_GET['S']);
 
-	$con = mysqli_connect('localhost','root','','Transport');
-	if (!$con) {
-	    die('Could not connect: ' . mysqli_error($con));
-	}
-	mysqli_select_db($con,"ajax_demo");
+	include "../../php/config.php";
+
 	$sql="INSERT INTO `Direction`(`ID_Route`, `ID_Start_Stop`, `ID_Finish_Stop`) VALUES ('".$R."', '".$F."', '".$S."')";
 	$result = mysqli_query($con,$sql);
 	if (!$result) {

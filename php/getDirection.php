@@ -1,11 +1,8 @@
 <?php  
 
 	$r = intval($_GET['r']);
-	$con = mysqli_connect('localhost','root','','Transport');
-	if (!$con) {
-	    die('Could not connect: ' . mysqli_error($con));
-	}
-	mysqli_select_db($con,"ajax_demo");
+	
+	include "../php/config.php";
 
 	$sql="SELECT `Direction`.`ID_Direction`, s1.`Name` AS First_Stop, s2.`Name` AS Second_Stop FROM `Direction` 
 			INNER JOIN `Stop` AS s1 ON s1.`ID_Stop` = `Direction`.`ID_Start_Stop`
